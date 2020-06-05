@@ -127,4 +127,31 @@ summary(stepsday)
 ```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+1.Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 
+```{r}
+newAct$days <- weekdays(as.Date(newAct$date))
+weekend<- grep("Saturday|Sunday", newAct$days, ignore.case = T)
+weekendAct<-newAct[weekend, ]
+weekendAct$weekday <- "weekend"
+weekdayAct <- subset(newAct,newAct$days!=weekend)
+weekdayAct$weekday <- "weekday"
+```
+```{r}
+head(weekdayAct)
+head(weekendAct)
+```
+```{r}
+newAct2 <- rbind(weekdayAct, weekendAct)
+head(newAct2)
+```
+
+2.Make a panel plot containing a time series plot (i.e. \color{red}{\verb|type = "l"|}type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
+
+```{r}
+library(ggplot2)
+meansteps <- aggregate(steps~ interval+weekday, newAct2, mean)
+g <- qplot(interval, steps, data = meansteps, facets = weekday~.)
+g + geom_line(size = 1) + ylab("Mean steps") + ggtitle("Average steps taken, \n averaged across weekday days or weekend days ")
+
+```
