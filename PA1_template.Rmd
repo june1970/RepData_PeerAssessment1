@@ -38,22 +38,93 @@ dim(Act)
 3.Clean data without NA value
 ```{r}
 cleanAct <- Act[ with (Act, { !(is.na(steps)) } ), ]
-```
-```{r}
+
 dim(cleanAct)
 str(cleanAct)
-Head(cleanAct)
+head(cleanAct)
 ```
 ## What is mean total number of steps taken per day?
+For this part of the assignment, you can ignore the missing values in the dataset.
 
+1.Calculate the total number of steps taken per day
+
+```{r}
+
+stepsday <- with(Act, tapply(steps, as.factor(Act$date), sum, na.rm = T))
+stepsday
+
+```
+
+2.Make a histogram of the total number of steps taken each day
+```{r}
+hist(stepsday, main = "Histogram of total number of steps taken per day", xlab = "Total number of steps")
+```
+
+3.Calculate and report the mean and median of the total number of steps taken per day
+```{r}
+summary(stepsday)
+```
 
 
 ## What is the average daily activity pattern?
 
+1.Make a time series plot (i.e. \color{red}{\verb|type = "l"|}type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
+```{r}
+ave_steps <- with(cleanAct, tapply(steps, cleanAct$interval, mean))
+int<- levels(as.factor(cleanAct$interval))
+plot(int, ave_steps, type = "l", main = "Time series plot of average daily activity", xlab = "interval", ylab = "Average steps")
+```
+
+2.Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+```{r}
+table <- data.frame(ave_steps, int)
+table[table$ave_steps==max(table$ave_steps),][2]
+```
 
 ## Imputing missing values
 
+Note that there are a number of days/intervals where there are missing values (coded as \color{red}{\verb|NA|}NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
 
+1.Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with \color{red}{\verb|NA|}NAs)
+```{r}
+missing_Act <- Act[is.na(Act$steps),]
+dim(missing_Act)
+length(missing_Act$steps)
+```
+
+2.Devise a strategy for filling in all of the missing values in the dataset. 
+Strategy: using mean values to replace NA value
+
+```{r}
+ave_steps <- with(cleanAct, tapply(steps, cleanAct$interval, mean))
+missing_Act$steps <- ave_steps
+```
+
+3.Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+```{r}
+newAct <- rbind(cleanAct, missing_Act)
+newAct <- newAct[order(newAct$date), ]
+dim(newAct)
+head(newAct)
+```
+
+4.Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+```{r}
+newstepsday <- with(newAct, tapply(steps, as.factor(newAct$date), sum))
+hist(newstepsday, main = "Histogram of total steps taken per day", xlab = "Total steps")
+```
+
+```{r}
+summary(newstepsday)
+```
+
+```{r}
+summary(stepsday)
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+
