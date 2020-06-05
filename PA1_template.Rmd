@@ -1,15 +1,49 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
+Title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
     keep_md: true
 ---
 
+## Loading and clean data
 
-## Loading and preprocessing the data
+1.Show any code that is needed to
+
+Load the data (i.e. \color{red}{\verb|read.csv()|}read.csv())
+Process/transform the data (if necessary) into a format suitable for your analysis
+
+```{r}
+getwd()
+
+```
+```{r}
+ setwd('C:/Users/Administrator/Desktop/Coursera data science specification/Course 4 Exploratory data analysis/Project wk2/RepData_PeerAssessment1')
+
+```
+
+2.Loading the data
+
+```{r}
+Act<- read.csv("activity.csv")
+
+```
 
 
+Checking the data
 
+```{r}
+dim(Act)
+
+```
+3.Clean data without NA value
+```{r}
+cleanAct <- Act[ with (Act, { !(is.na(steps)) } ), ]
+```
+```{r}
+dim(cleanAct)
+str(cleanAct)
+Head(cleanAct)
+```
 ## What is mean total number of steps taken per day?
 
 
